@@ -11,7 +11,7 @@
 .vscode/*
 terraform.tfstate
 terraform.tfstate.backup
-provider.tf
+# provider.tf
 # Local .terraform directories
 **/.terraform/*
 
