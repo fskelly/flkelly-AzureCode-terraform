@@ -1,0 +1,34 @@
+az login
+az account list
+
+##replace with your subscriptionID
+SUBSCRIPTION_ID=""
+az account set --subscription ${SUBSCRIPTION_ID}
+
+##use a suitable SPN name for your environment
+TERRAFORM_SPN_NAME="terraform-flkelly"
+SPN=$(az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}" --name ${TERRAFORM_SPN_NAME})
+
+#needed if not run in cloud shell
+sudo apt-get install jq
+
+SPN_PWD=$(echo "${SPN}" | jq -c '.password')
+SPN_PWD=$(echo ${SPN_PWD%?} | cut -c2-)
+SPN_TENANT=$(echo "${SPN}" | jq -c '.tenant')
+SPN_TENANT=$(echo ${SPN_TENANT%?} | cut -c2-)
+SPN_APPID=$(echo "${SPN}" | jq -c '.appId')
+SPN_APPID=$(echo ${SPN_APPID%?} | cut -c2-)
+SPN_NAME=$(echo "${SPN}" | jq -c '.name')
+SPN_NAME=$(echo ${SPN_NAME%?} | cut -c2-)
+SPN_DISPLAYNAME=$(echo "${SPN}" | jq -c '.displayName')
+SPN_DISPLAYNAME=$(echo ${SPN_DISPLAYNAME%?} | cut -c2-)
+
+##read out variabes from $SPN
+export ARM_SUBSCRIPTION_ID=${SUBSCRIPTION_ID}
+export ARM_CLIENT_ID=${SPN_APPID}
+export ARM_CLIENT_SECRET=${SPN_PWD}
+export ARM_TENANT_ID=${SPN_TENANT}
+
+##CLEAN UP
+#$spID = (((az ad sp list --show-mine | ConvertFrom-Json)) | Where-Object {$_.servicePrincipalNames -match "flkelly-TerraformTesting"}).ObjectID
+#az ad sp delete --id $spID
