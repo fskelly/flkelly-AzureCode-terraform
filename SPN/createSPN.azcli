@@ -6,7 +6,7 @@ SUBSCRIPTION_ID=""
 az account set --subscription ${SUBSCRIPTION_ID}
 
 ##use a suitable SPN name for your environment
-TERRAFORM_SPN_NAME="terraform-flkelly"
+TERRAFORM_SPN_NAME=""
 SPN=$(az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}" --name ${TERRAFORM_SPN_NAME})
 
 #needed if not run in cloud shell

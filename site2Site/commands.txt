@@ -1,0 +1,3 @@
+terraform init
+terraform plan -var-file="subs.tfvars" -var-file="inputs.tfvars" -out testing1.plan
+terraform apply "testing1.plan"

@@ -1,12 +1,3 @@
-#PROVIDER AZURE
-#provider "azurerm" {
-#    subscription_id = var.ARM_SUBSCRIPTION_ID
-#    client_id       = var.ARM_CLIENT_ID
-#    client_secret   = var.ARM_CLIENT_SECRET
-#    tenant_id       = var.ARM_TENANT_ID
-#    version         = "1.27.0"
-#}
-
 resource "azurerm_resource_group" "vmrg" {
 #  name     = "${var.vm_resource_group_name}" # NB this name must be unique within the Azure subscription.
   name     = "${var.prefix}-${var.location}-vms1"
@@ -87,25 +78,9 @@ resource "azurerm_virtual_network_gateway" "gateway" {
     subnet_id                     = azurerm_subnet.gateway.id
   }
 
-  vpn_client_configuration {
-    address_space        = ["172.31.0.0/16"]
-    vpn_client_protocols = ["SSTP", "IkeV2"] # NB IKEv2 is not supported by the Basic sku gateway.
+  depends_on = [azurerm_public_ip.gatewayip]
 
-    #root_certificate {
-    #  name             = "example-ca"
-    #  public_cert_data = "${base64encode(file("shared/example-ca/example-ca-crt.der"))}"
-    #}
-  }
 }
-
-#resource "azurerm_point_to_site_vpn_gateway" "p2sgateway" {
-#  name                        = "p2s-gateway"
-#  location                    = var.locations["${var.location}"]
-#  resource_group_name         = azurerm_resource_group.rg.name
-#  virtual_hub_id              = azurerm_virtual_hub.p2sgateway.id
-#  vpn_server_configuration_id = azurerm_vpn_server_configuration.p2sgateway.id
-#  scale_unit                  = 1
-#}
 
 resource "azurerm_local_network_gateway" "home" {
   name                = "home"
@@ -131,16 +106,7 @@ resource "azurerm_virtual_network_gateway_connection" "home" {
   # see https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpn-devices#ipsec
   # see https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-ipsecikepolicy-rm-powershell
   # see https://www.terraform.io/docs/providers/azurerm/r/virtual_network_gateway_connection.html
-  ipsec_policy {
-    dh_group         = "DHGroup2048"
-    ike_encryption   = "AES128"
-    ike_integrity    = "SHA256"
-    ipsec_encryption = "AES128"
-    ipsec_integrity  = "SHA256"
-    pfs_group        = "PFS2048"
-    sa_datasize      = 104857600  # [KB] (104857600KB = 100GB)
-    sa_lifetime      = 27000      # [Seconds] (27000s = 7.5h)
-  }
+
 }
 
 resource "azurerm_network_interface" "ubuntu" {
