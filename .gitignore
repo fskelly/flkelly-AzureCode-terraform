@@ -14,14 +14,18 @@ terraform.tfstate.backup
 # provider.tf
 # Local .terraform directories
 **/.terraform/*
-.terraform.lock.hcl
-/..terraform.lock.hcl
+*.terraform.lock.hcl
+*/*.terraform.lock.hcl
+**/*.terraform.lock.hcl
+/.terraform.lock.hcl
 
 # .tfstate files
 *.tfstate
 *.tfstate.*
 *.plan
 *.plan.*
+*.*.lock.hcl
+*.*.lock.hcl.*
 
 # Crash log files
 crash.log
@@ -45,3 +49,5 @@ override.tf.json
 
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
+/resourceGroup/advanced/.terraform.lock.hcl
+/resourceGroup/.terraform.lock.hcl
